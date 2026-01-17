@@ -11,7 +11,6 @@ import Image from "next/image"
 import { useState } from "react"
 import { createAppointment } from "@/services/appointment.services"
 import { useRouter } from "next/navigation"
-const router = useRouter();
 
 export function ReviewConfirm() {
   const dispatch = useDispatch()
@@ -19,6 +18,7 @@ export function ReviewConfirm() {
     (state: RootState) => state.booking,
   )
   const [isConfirmed, setIsConfirmed] = useState(false)
+  const router = useRouter();
 
   const handleBack = () => {
     dispatch(setCurrentStep(3))

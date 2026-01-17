@@ -1,4 +1,5 @@
 import api from "./api";
+import { User } from "../lib/features/auth-slice";
 
 type LoginPayload = {
   email: string;
@@ -21,6 +22,7 @@ export const registerUser = (
   return api.post("/auth/register", userData);
 };
 
-export const fetchCurrentUser = () => {
-  return api.get("/auth/me");
+export const fetchCurrentUser = async (): Promise<User> => {
+  const res = await api.get("/auth/me");
+  return res.data;
 };

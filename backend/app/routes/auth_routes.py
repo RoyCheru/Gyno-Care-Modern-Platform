@@ -221,4 +221,21 @@ def logout():
     # In a real application, you would handle token revocation here.
     return jsonify({"message": "Logout successful"}), 200
 
+#fetch current user info
+@auth_bp.route('/me', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    from flask_jwt_extended import get_jwt_identity
+    identity = get_jwt_identity()
+    user = User.query.get(identity['id'])
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
 
+    user_data = {
+        'id': user.id,
+        'name': user.name,
+        'email': user.email,
+        'role': user.role
+    }
+
+    return jsonify({'user': user_data}), 200

@@ -114,7 +114,7 @@ export function SelectDoctor() {
             onClick={() => handleSelectDoctor(doctor)}
           >
             <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
-              <Image src={doctor.image || "/placeholder.svg"} alt={doctor.name} fill className="object-cover" />
+              {/* <Image src={doctor.image || "/placeholder.svg"} alt={doctor.name} fill className="object-cover" /> */}
             </div>
             <div className="p-4 flex flex-col gap-1">
               <h3 className="font-bold text-gray-900 text-lg">{doctor.name}</h3>
