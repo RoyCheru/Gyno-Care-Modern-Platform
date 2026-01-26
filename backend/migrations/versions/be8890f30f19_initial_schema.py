@@ -1,8 +1,8 @@
-"""Initial migration
+"""Initial schema
 
-Revision ID: 3b64e6fd1892
+Revision ID: be8890f30f19
 Revises: 
-Create Date: 2026-01-09 23:24:39.902256
+Create Date: 2026-01-22 15:24:53.164966
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3b64e6fd1892'
+revision = 'be8890f30f19'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,6 +47,8 @@ def upgrade():
     sa.Column('phone', sa.String(length=50), nullable=False),
     sa.Column('gender', sa.String(length=20), nullable=True),
     sa.Column('years_of_experience', sa.Integer(), nullable=False),
+    sa.Column('medicalLicenceNumber', sa.String(length=100), nullable=True),
+    sa.Column('bio', sa.Text(), nullable=True),
     sa.Column('speciality_id', sa.Integer(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -66,6 +68,8 @@ def upgrade():
     sa.Column('experience_years', sa.Integer(), nullable=False),
     sa.Column('profile_picture', sa.String(length=255), nullable=True),
     sa.Column('status', sa.String(length=50), nullable=False),
+    sa.Column('phone', sa.String(length=50), nullable=True),
+    sa.Column('joined_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['speciality_id'], ['specialities.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -77,6 +81,9 @@ def upgrade():
     sa.Column('emergency_contact', sa.String(length=100), nullable=True),
     sa.Column('age', sa.Integer(), nullable=True),
     sa.Column('gender', sa.String(length=20), nullable=True),
+    sa.Column('status', sa.String(length=50), nullable=False),
+    sa.Column('phone', sa.String(length=50), nullable=True),
+    sa.Column('joined_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

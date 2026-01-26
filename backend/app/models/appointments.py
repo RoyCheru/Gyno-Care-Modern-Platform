@@ -33,7 +33,13 @@ class Appointment(db.Model):
         return {
             "id": self.id,
             "patient_id": self.patient_id,
+            "patient": {
+                "id": self.patient.id,
+                "name": self.patient.name,
+                "email": self.patient.email,
+            },
             "doctor_id": self.doctor_id,
+            "doctor_user_id": self.doctor.user_id if self.doctor else None,
             "reason": self.reason,
             "appointment_time": self.appointment_time,
             "status": self.status,

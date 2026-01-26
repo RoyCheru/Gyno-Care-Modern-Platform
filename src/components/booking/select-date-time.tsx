@@ -11,11 +11,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Calendar } from "lucide-react"
 
 const availableDates = [
-  { date: "2026-01-10", display: "Fri, Jan 10" },
-  { date: "2026-01-11", display: "Sat, Jan 11" },
-  { date: "2026-01-13", display: "Mon, Jan 13" },
-  { date: "2026-01-14", display: "Tue, Jan 14" },
-  { date: "2026-01-15", display: "Wed, Jan 15" },
+  { date: "2026-01-23", display: "Fri, Jan 23" },
+  { date: "2026-01-24", display: "Sat, Jan 24" },
+  { date: "2026-01-25", display: "Mon, Jan 25" },
+  { date: "2026-01-26", display: "Tue, Jan 26" },
+  { date: "2026-01-27", display: "Wed, Jan 27" },
 ]
 
 const timeSlots = [
@@ -51,13 +51,23 @@ export function SelectDateTime() {
     }
   };
 
+  // helper function to convert "10:00 AM" to "10:00"
+  const to24Hour = (time: string) => {
+    const date = new Date(`1970-01-01 ${time}`);
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
   // fetch booked slots based on selected date and doctor
   useEffect(() => {
     if (!selectedDate || !doctorId) return;
 
     setLoadingSlots(true);
 
-    fetchBookedSlots(selectedDate, doctorId)
+    fetchBookedSlots(doctorId, selectedDate)
       .then((slots) => {
         setBookedSlots(slots);
         dispatch(setSelectedTime(null)); // reset time when date changes
@@ -70,13 +80,16 @@ export function SelectDateTime() {
         setLoadingSlots(false);
       });
   }, [selectedDate, doctorId, dispatch]);
+  console.log("bookedSlots:", bookedSlots);
+  console.log("selectedDate:", selectedDate);
 
 
 
 // helper function to filter out booked slots
-  const normalizeTime = (time: string) => time.trim();
+  const normalized = bookedSlots.map((time) => to24Hour(time));
   const isSlotBooked = (time: string) => {
-    return bookedSlots.map(normalizeTime).includes(normalizeTime(time));
+    return normalized.includes(to24Hour(time));
+    // return bookedSlots.map(normalizeTime).includes(normalizeTime(time));
   };
 
   return (

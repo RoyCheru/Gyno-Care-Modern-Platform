@@ -3,13 +3,21 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { logout } from "@/lib/features/auth-slice"
 import Link from "next/link"
 import { Menu, X, User, Calendar, Settings, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Toggle this to test states
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -29,6 +37,11 @@ export function Navbar() {
     }
   }
 
+  const handleSignOut = () => {
+    dispatch(logout());
+    router.push("/");
+  };
+
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 py-4 px-6 md:px-12 lg:px-20 sticky top-0 z-50">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -38,7 +51,7 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="#" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
+          <Link href="/" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
             Home
           </Link>
           <Link href="#about" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
@@ -90,8 +103,8 @@ export function Navbar() {
                   <button
                     className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-[#fdf2f7] hover:text-[#c94d8a] transition-colors w-full text-left"
                     onClick={() => {
-                      setIsDropdownOpen(false)
-                      // Sign out logic will be added later
+                      setIsDropdownOpen(false),
+                      handleSignOut()
                     }}
                   >
                     <LogOut className="w-4 h-4" />

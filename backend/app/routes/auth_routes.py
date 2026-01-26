@@ -15,10 +15,10 @@ def register():
     data = request.json
 
     # Get the user values
-    name = data.get('name')
+    name = data.get('fullName')
     email = data.get('email')
     password = data.get('password')
-    role = data.get('role', 'patient')
+    role = data.get('accountType', 'patient')
 
     # Validate fields
     if not all([name, email, password]):
@@ -115,12 +115,7 @@ def login_doctor():
     if not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid email or password"}), 401
 
-    access_token = create_access_token(identity={
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "role": user.role
-    })
+    access_token = create_access_token(identity=str(user.id), additional_claims={"role": "doctor"})
 
     return jsonify({
         "message": "Login successful",
@@ -133,7 +128,7 @@ def login_patient():
     email = data.get("email")
     password = data.get("password")
 
-    user = User.query.filter_by(email=email, role='patient').first()
+    user = User.query.filter_by(email=email).first()
     print("DATA RECEIVED:", data)
     print("USER FOUND:", user)
     print("STORED HASH:", user.password)
@@ -145,13 +140,7 @@ def login_patient():
     if not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid email or password"}), 401
 
-    access_token = create_access_token(identity={
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "role": user.role
-    })
-
+    access_token = create_access_token(identity=str(user.id), additional_claims={"role": user.role})
     return jsonify({
         "message": "Login successful",
         "access_token": access_token
@@ -202,12 +191,8 @@ def login_admin():
     if not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid email or password"}), 401
 
-    access_token = create_access_token(identity={
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "role": user.role
-    })
+    access_token = create_access_token(identity=str(user.id), additional_claims={"role": "admin"})
+
 
     return jsonify({
         "message": "Login successful",
@@ -226,16 +211,17 @@ def logout():
 @jwt_required()
 def get_current_user():
     from flask_jwt_extended import get_jwt_identity
-    identity = get_jwt_identity()
-    user = User.query.get(identity['id'])
+    user_id = get_jwt_identity()  # string
+    user = User.query.get(int(user_id))
+
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    user_data = {
-        'id': user.id,
-        'name': user.name,
-        'email': user.email,
-        'role': user.role
-    }
-
-    return jsonify({'user': user_data}), 200
+    return jsonify({
+        'user': {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role
+        }
+    }), 200

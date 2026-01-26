@@ -10,6 +10,8 @@ class DoctorApplication(db.Model):
     phone = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(20), nullable=True)
     years_of_experience = db.Column(db.Integer, nullable=False)
+    medicalLicenceNumber = db.Column(db.String(100), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
 
     speciality_id = db.Column(db.Integer, db.ForeignKey("specialities.id"), nullable=False)
     status = db.Column(db.String(20), default="pending")  # pending, approved, rejected
@@ -29,6 +31,10 @@ class DoctorApplication(db.Model):
             "phone": self.phone,
             "gender": self.gender,
             "speciality_id": self.speciality_id,
+            "speciality": self.speciality.to_dict() if self.speciality else None,
+            "years_of_experience": self.years_of_experience,
+            "medicalLicenceNumber": self.medicalLicenceNumber,
+            "bio": self.bio,
             "status": self.status,
             "created_at": self.created_at,
             "documents": self.documents

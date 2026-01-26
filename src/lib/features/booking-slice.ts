@@ -6,7 +6,38 @@ export interface Doctor {
   specialty: string
   experience: number
   fee: number
-  image: string
+  image: string | null
+}
+
+export interface BackendDoctor {
+  id: number
+  status: string
+  experience_years: number
+  currency: string
+  consultation_fee: number
+  profile_picture: string | null
+
+  user: {
+    id: number
+    name: string
+    email: string
+  }
+
+  speciality: {
+    id: number
+    name: string
+  }
+}
+
+export function mapDoctorToUI(doctor: BackendDoctor): Doctor {
+  return {
+    id: doctor.id.toString(),
+    name: doctor.user.name,
+    specialty: doctor.speciality.name,
+    experience: doctor.experience_years,
+    fee: doctor.consultation_fee,
+    image: doctor.profile_picture,
+  }
 }
 
 export interface BookingState {

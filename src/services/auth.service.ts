@@ -6,7 +6,12 @@ type LoginPayload = {
   password: string;
 };
 
-type RegisterPayload = any; // tighten later if you want
+type RegisterPayload = {
+  fullName: string;
+  email: string;
+  password: string;
+  accountType: "patient";
+};
 
 export const loginUser = (
   email: string,
@@ -16,6 +21,8 @@ export const loginUser = (
   return api.post("/auth/login/patient", payload);
 };
 
+
+
 export const registerUser = (
   userData: RegisterPayload
 ) => {
@@ -24,5 +31,5 @@ export const registerUser = (
 
 export const fetchCurrentUser = async (): Promise<User> => {
   const res = await api.get("/auth/me");
-  return res.data;
+  return res.data.user;
 };

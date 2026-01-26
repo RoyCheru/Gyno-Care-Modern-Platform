@@ -18,7 +18,7 @@ def book_appointment():
     if request.method == "OPTIONS":
         return '', 200
     data = request.get_json() or {}
-    patient_id = get_jwt_identity()["id"]
+    patient_id = get_jwt_identity()
 
     doctor_id = data.get("doctor_id")
     date_str = data.get("date")
@@ -60,7 +60,7 @@ def book_appointment():
         doctor_id=doctor_id,
         reason=reason,
         appointment_time=appointment_time,
-        status="pending"   # recommended status
+        status="Pending"   # recommended status
     )
     db.session.add(new_appointment)
     db.session.commit()
@@ -77,7 +77,7 @@ def book_appointment():
 @jwt_required()
 @role_required(["patient"])
 def patient_appointments():
-    patient_id = get_jwt_identity()["id"]
+    patient_id = get_jwt_identity()
     appointments = Appointment.query.filter_by(patient_id=patient_id).all()
 
     return jsonify([a.to_dict() for a in appointments]), 200
@@ -91,17 +91,20 @@ def patient_appointments():
 @jwt_required()
 @role_required("patient")
 def cancel_appointment(appointment_id):
-    patient_id = get_jwt_identity()
+    patient_id = int(get_jwt_identity())
+    print("Patient ID:", patient_id)
 
     appointment = Appointment.query.get_or_404(appointment_id)
-
+    if not appointment:
+        return jsonify({"msg": "Appointment not found"}), 404
+    
     if appointment.patient_id != patient_id:
         return jsonify({"msg": "Not your appointment"}), 403
 
-    if appointment.status != "pending":
+    if appointment.status != "Pending":
         return jsonify({"msg": "Only pending appointments can be cancelled"}), 400
     
-    appointment.status = "cancelled"
+    appointment.status = "Cancelled"
     db.session.commit()
 
     return jsonify({"msg": "Appointment cancelled successfully"})
@@ -321,23 +324,26 @@ def end_consultation(appointment_id):
     
     
 
-@appointment_bp.route("/<int:appointment_id>/approve", methods=["PUT"])
+@appointment_bp.route("/approve/<int:appointment_id>", methods=["PUT"])
 @jwt_required()
 @role_required(["doctor"])
 def approve_appointment(appointment_id):
-    doctor_id = get_jwt_identity()
+    doctor_id = int(get_jwt_identity())
     doctor = User.query.get(doctor_id)
 
     appointment = Appointment.query.get_or_404(appointment_id)
-
+    print("Appointment ID:", appointment.id)
+    print("Appointment Doctor User ID:", appointment.doctor.user_id)
+    print("Doctor ID:", doctor.id)
+    # print("Appointment Doctor ID:", appointment.doctor_user_id)
     # Ensure doctor is approving THEIR OWN appointment
-    if appointment.doctor_id != doctor.id:
+    if appointment.doctor.user_id != doctor.id:
         return jsonify({"error": "You can only approve your own appointments"}), 403
 
-    if appointment.status not in ["pending"]:
+    if appointment.status not in ["Pending"]:
         return jsonify({"error": f"Cannot approve appointment with status '{appointment.status}'"}), 400
 
-    appointment.status = "approved"
+    appointment.status = "Approved"
     db.session.commit()
 
     return jsonify({"message": "Appointment approved", "appointment": appointment.to_dict()}), 200
@@ -364,3 +370,4 @@ def reject_appointment(appointment_id):
     db.session.commit()
 
     return jsonify({"message": "Appointment rejected", "appointment": appointment.to_dict()}), 200
+

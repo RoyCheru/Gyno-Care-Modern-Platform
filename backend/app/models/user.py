@@ -22,8 +22,5 @@ class User(db.Model):
             "name": self.name,
             "email": self.email,
             "role": self.role,
-            "specialization": self.specialization,
-            "experience_years": self.experience_years,
-            "age": self.age,
             "gender": self.gender
         }

@@ -64,7 +64,8 @@ def get_doctor_profile():
 def update_doctor_profile():
     doctor_user_id = get_jwt_identity()
     data = request.get_json()
-
+    from app.models.doctors import Doctor
+    from app.models.specialities import Speciality
     doctor = Doctor.query.filter_by(user_id=doctor_user_id).first()
     if not doctor:
         return jsonify({"msg": "Doctor profile not found"}), 404
@@ -89,6 +90,7 @@ def update_doctor_profile():
         doctor.profile_picture = data["profile_picture"]
 
     db.session.commit()
+    
 
     def to_dict(self):
         return {
@@ -104,6 +106,8 @@ def update_doctor_profile():
             "experience_years": self.user.experience_years,
             "status": self.status
         }
+    return jsonify({"msg": "Profile updated successfully", "doctor": doctor.to_dict()}), 200
+
 @doctor_bp.route("/profile/user", methods=["PATCH"])
 @jwt_required()
 @role_required(["doctor"])
@@ -221,7 +225,7 @@ def search_doctors():
 @doctor_bp.route("/makeapplication", methods=["POST"])
 def make_doctor_application():
     data = request.get_json()
-    full_name = data.get("full_name")
+    full_name = data.get("fullName")
     speciality_id = data.get("speciality_id")
     years_of_experience = data.get("years_of_experience")
     email = data.get("email")
@@ -239,6 +243,8 @@ def make_doctor_application():
         years_of_experience=years_of_experience,
         email=email,
         phone=phone,
+        medicalLicenceNumber=None,
+        bio=None,
         gender=gender
     )
     db.session.add(application)
@@ -312,7 +318,7 @@ def get_booked_slots(doctor_id):
     if not date_str:
         return jsonify({"msg": "date query parameter is required"}), 400
 
-    from datetime import datetime
+    from datetime import datetime, time
     date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
 
     from app.models.appointments import Appointment
@@ -329,7 +335,7 @@ def get_booked_slots(doctor_id):
     ).all()
 
     booked_slots = [
-        appt.appointment_time.strftime("%H:%M")
+         appt.appointment_time.strftime("%H:%M")  # 24-hour format
         for appt in appointments
     ]
 

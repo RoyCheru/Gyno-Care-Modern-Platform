@@ -9,6 +9,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
+import { mapDoctorToUI } from "@/lib/features/booking-slice"
 
 // const doctors: Doctor[] = [
 //   {
@@ -82,8 +83,9 @@ export function SelectDoctor() {
   useEffect(() => {
     async function loadDoctors() {
       try {
-        const fetchedDoctors = await fetchDoctors()
-        setDoctors(fetchedDoctors)
+        const data = await fetchDoctors()
+        const mappedDoctors = data.map(mapDoctorToUI)
+        setDoctors(mappedDoctors)
       } catch (err) {
         setError("Failed to fetch doctors");
       } finally {

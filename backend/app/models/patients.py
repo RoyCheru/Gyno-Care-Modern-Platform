@@ -9,6 +9,9 @@ class Patients(db.Model):
     emergency_contact = db.Column(db.String(100), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(20), nullable=True)
+    status = db.Column(db.String(50), nullable=False, default="active")  # active, inactive, suspended
+    phone = db.Column(db.String(50), nullable=True)
+    joined_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     user = db.relationship("User", back_populates="patient_profile") # One-to-one relationship
     
@@ -20,5 +23,9 @@ class Patients(db.Model):
             "user_id": self.user_id,
             "name": self.user.name,
             "email": self.user.email,
-            "age": self.age
+            "age": self.age,
+            "gender": self.gender,
+            "phone": self.phone,
+            "status": self.status,
+            "joined_at": self.joined_at,
         }

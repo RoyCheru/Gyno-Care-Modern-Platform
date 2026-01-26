@@ -27,7 +27,7 @@ def create_speciality():
 
     return jsonify({"msg": "Speciality created", "speciality": speciality.to_dict()}), 201
 
-@speciality_bp.route("/", methods=["GET"])
+@speciality_bp.route("/all", methods=["GET"])
 def get_specialities():
     specialities = Speciality.query.all()
     return jsonify([s.to_dict() for s in specialities]), 200

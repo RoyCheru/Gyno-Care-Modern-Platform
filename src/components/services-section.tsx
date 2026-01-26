@@ -36,31 +36,44 @@ const services = [
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-background">
+    <section
+      id="services"
+      className="py-16 md:py-24 px-6 md:px-12 lg:px-20 bg-background"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">Our Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            Our Services
+          </h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive gynaecological care designed to support every aspect of your health journey
+            Comprehensive gynaecological care designed to support every aspect
+            of your health journey
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
-            <Card key={index} className="border-none shadow-md hover:shadow-lg transition-shadow bg-card">
+            <Card
+              key={index}
+              className="border-none shadow-md hover:shadow-lg transition-shadow bg-card"
+            >
               <CardHeader>
                 <div className="w-12 h-12 rounded-full bg-[#f9a8c9]/30 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-[#c94d8a]" />
                 </div>
-                <CardTitle className="text-xl text-foreground">{service.title}</CardTitle>
+                <CardTitle className="text-xl text-foreground">
+                  {service.title}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-muted-foreground text-base">{service.description}</CardDescription>
+                <CardDescription className="text-muted-foreground text-base">
+                  {service.description}
+                </CardDescription>
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

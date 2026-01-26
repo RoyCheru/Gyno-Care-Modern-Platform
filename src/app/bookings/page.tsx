@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer"
 import { BookingCard, type Booking } from "@/components/booking-card"
 import { Button } from "@/components/ui/button"
 import { CalendarX } from "lucide-react"
+import { cancelAppointment } from "@/services/appointment.services"
 
 // Mock booking data with different statuses
 // const initialBookings: Booking[] = [
@@ -59,22 +60,24 @@ export default function BookingsPage() {
         const appointments = await myAppointments();
         const formattedBookings = appointments.map((appointment: any) => ({
           id: appointment.id,
-          doctorName: appointment.doctor.name,
-          doctorSpeciality: appointment.doctor.speciality,
+          doctorName: appointment.doctor?.user?.name ?? "Unknown Doctor",
+          doctorSpeciality: appointment.doctor.speciality?.name ?? "",
           date: new Date(appointment.date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
           }),
-          time: appointment.time,
-          fee: appointment.fee,
+          time: appointment.appointment_time,
+          fee: appointment.doctor.consultation_fee,
           status: appointment.status as Booking["status"],
         }));
         setBookings(formattedBookings);
+        console.log("formated bookings:", formattedBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
     }
+    
 
     fetchBookings();
   }, []);
@@ -82,6 +85,8 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   
   const handleCancel = (id: string) => {
+    // Here you would typically call an API to cancel the booking
+    cancelAppointment(id);
     setBookings((prev) =>
       prev.map((booking) => (booking.id === id ? { ...booking, status: "Cancelled" as const } : booking)),
     )

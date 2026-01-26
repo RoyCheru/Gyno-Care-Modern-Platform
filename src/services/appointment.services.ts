@@ -26,3 +26,23 @@ export const payAppointment = async (paymentData: PaymentData) => {
   const response = await api.post("/payments/process", paymentData);
   return response.data;
 };
+
+export const fetchAppointments = async () => {
+  const response = await api.get("/appointments/all");
+  return response.data;
+};
+
+export const updateAppointmentStatus = async (
+  appointmentId: number | string,
+  status: string
+) => {
+  const response = await api.put(`/appointments/status/${appointmentId}`, {
+    status,
+  });
+  return response.data;
+};
+
+export const getAppointmentsByDoctor = async (doctorId: number | string) => {
+  const response = await api.get(`/appointments/doctor/${doctorId}`);
+  return response.data;
+};

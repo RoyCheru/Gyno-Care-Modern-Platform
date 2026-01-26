@@ -23,28 +23,40 @@ export function ReviewConfirm() {
   const handleBack = () => {
     dispatch(setCurrentStep(3))
   }
+  //helper function to convert to 24-hour format
+  function to24Hour(time: string) {
+    const [t, modifier] = time.split(" ");
+    let [hours, minutes] = t.split(":").map(Number);
+
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  }
 
   const handleConfirm = async () => {
     // Here you would typically send the booking data to your backend server
     try {
       const token = localStorage.getItem("access_token");
        if (!token) {
-      router.push("/login")
+      router.push("/signin");
       return
     }
     const newBooking = {
       doctor_id: selectedDoctor?.id || "",
       reason: healthConcern,
       date: selectedDate,
-      slot: selectedTime,
+      slot: to24Hour(selectedTime || ""),
     };
+    console.log("newBooking:", newBooking)
     await createAppointment(newBooking);
     setIsConfirmed(true)
-    router.push("/appointments");
+    // router.push("/bookings");
     } catch (error) {
       console.error("Error creating appointment:", error);
       alert("Failed to create appointment. Please try again.");
     }
+  //  dispatch(resetBooking())
   }
 
   const handleNewBooking = () => {

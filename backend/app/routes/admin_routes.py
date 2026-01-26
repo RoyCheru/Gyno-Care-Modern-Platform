@@ -60,19 +60,31 @@ def get_all_users():
     return jsonify(result), 200
 
 
+# @admin_bp.route('/users/doctors', methods=['GET'])
+# @jwt_required()
+# @role_required(['admin'])
+# def get_all_doctors():
+#     doctors = User.query.filter_by(role='doctor').all()
+#     result = [doctor.to_dict() for doctor in doctors]
+#     return jsonify(result), 200
+
+# ============================
+# get all doctors
+# ============================
 @admin_bp.route('/users/doctors', methods=['GET'])
 @jwt_required()
 @role_required(['admin'])
 def get_all_doctors():
-    doctors = User.query.filter_by(role='doctor').all()
+    doctors = Doctor.query.all()
     result = [doctor.to_dict() for doctor in doctors]
     return jsonify(result), 200
 
-@admin_bp.route('/users/patients', methods=['GET'])
+@admin_bp.route('/patients/all', methods=['GET'])
 @jwt_required()
 @role_required(['admin'])
 def get_all_patients():
-    patients = User.query.filter_by(role='patient').all()
+    from app.models.patients import Patients
+    patients = Patients.query.all()
     result = [patient.to_dict() for patient in patients]
     return jsonify(result), 200
 
@@ -153,7 +165,7 @@ def get_system_stats():
     return jsonify(stats), 200
 
 #approve or reject doctor applications
-@admin_bp.route('/doctors/applications/<int:application_id>', methods=['POST'])
+@admin_bp.route('/doctors/applications/approve/<int:application_id>', methods=['POST'])
 @jwt_required()
 @role_required(["admin"])
 def review_doctor_application(application_id):
@@ -182,26 +194,28 @@ def review_doctor_application(application_id):
         user_id=new_user.id,
         speciality_id=application.speciality_id,
         experience_years=application.years_of_experience,
+        medicalLicenceNumber=application.medicalLicenceNumber,
+        phone=application.phone,
         consultation_fee=0.0,  # doctor can set later
         status="active"
     )
 
     db.session.add(new_doctor)
 
-    # Delete application
-    db.session.delete(application)
+    # approve application instead of deleting for record keeping
+    application.status = 'approved'
     db.session.commit()
 
     return jsonify({
         "message": "Doctor approved successfully",
         "doctor": new_doctor.to_dict()
     }), 201
-    
-@admin_bp.route('/doctors/applications/<int:application_id>/reject', methods=['POST'])
+
+@admin_bp.route('/doctors/applications/reject/<int:application_id>', methods=['POST'])
 @jwt_required()
 @role_required(["admin"])
 def reject_doctor_application(application_id):
-    application = DoctorsApplication.query.get(application_id)
+    application = DoctorApplication.query.get(application_id)
     if not application:
         return jsonify({"msg": "Application not found"}), 404
     if application.status != 'pending':
@@ -218,6 +232,51 @@ def reject_doctor_application(application_id):
 @jwt_required()
 @role_required(["admin"])
 def get_doctor_applications():
-    applications = DoctorsApplication.query.filter_by(status='pending').all()
+    applications = DoctorApplication.query.filter_by(status='pending').all()
     result = [app.to_dict() for app in applications]
     return jsonify(result), 200
+
+@admin_bp.route('/patients/total', methods=['GET'])
+@jwt_required()
+@role_required(["admin"])
+def get_total_patients():
+    total_patients = User.query.filter_by(role='patient').count()
+    return jsonify({'total_patients': total_patients}), 200
+
+@admin_bp.route('/doctors/total', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
+def get_total_doctors():
+    total_doctors = User.query.filter_by(role='doctor').count()
+    return jsonify({'total_doctors': total_doctors}), 200
+
+# ============================
+#  pending doctors applications count
+# ============================
+@admin_bp.route('/doctors/applications/pending', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
+def get_pending_doctor_applications_count():
+    pending_count = DoctorApplication.query.filter_by(status='pending').count()
+    return jsonify({'pending_applications': pending_count}), 200
+
+# ============================
+# appointments count this month
+# ============================
+@admin_bp.route('/appointments/this_month', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
+def get_appointments_this_month_count():
+    from datetime import datetime
+    from sqlalchemy import extract
+
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    count = Appointment.query.filter(
+        extract('month', Appointment.date) == month,
+        extract('year', Appointment.date) == year
+    ).count()
+
+    return jsonify({'appointments_this_month': count}), 200
