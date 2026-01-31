@@ -63,7 +63,7 @@ export function Navbar() {
           <Link href="#how-it-works" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
             How It Works
           </Link>
-          <Link href="#contact" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
+          <Link href="/contact" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
             Contact
           </Link>
         </div>
@@ -148,7 +148,7 @@ export function Navbar() {
           <Link href="#how-it-works" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
             How It Works
           </Link>
-          <Link href="#contact" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
+          <Link href="/contact" className="text-gray-700 hover:text-[#c94d8a] transition-colors font-medium">
             Contact
           </Link>
 
