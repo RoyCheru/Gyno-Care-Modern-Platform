@@ -41,6 +41,8 @@ backend/ENV/
 backend/bacenv.bak/
 backend/venv.bak/
 
+backend/instance/gynocare.db
+
 # os editors
 .DS_Store
 .idea/
