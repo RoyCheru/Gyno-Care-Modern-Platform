@@ -71,8 +71,10 @@ export default function BookingsPage() {
           fee: appointment.doctor.consultation_fee,
           status: appointment.status as Booking["status"],
         }));
-        setBookings(formattedBookings);
-        console.log("formated bookings:", formattedBookings);
+        // remove cancelled bookings from the list
+        const activeBookings = formattedBookings.filter((booking: Booking) => booking.status !== "Cancelled");
+        setBookings(activeBookings);
+        console.log("formated bookings:", activeBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }

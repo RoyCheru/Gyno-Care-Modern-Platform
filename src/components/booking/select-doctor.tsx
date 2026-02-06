@@ -122,7 +122,7 @@ export function SelectDoctor() {
               <h3 className="font-bold text-gray-900 text-lg">{doctor.name}</h3>
               <p className="text-sm text-[#c94d8a] font-medium">{doctor.specialty}</p>
               <p className="text-sm text-gray-600">{doctor.experience} years experience</p>
-              <p className="text-xl font-bold text-gray-900 mt-2">${doctor.fee}</p>
+              <p className="text-xl font-bold text-gray-900 mt-2">Ksh.{doctor.fee}</p>
             </div>
           </Card>
         ))}

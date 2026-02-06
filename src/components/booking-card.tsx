@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Clock, DollarSign, User, Stethoscope } from "lucide-react"
+import { Calendar, Clock, DollarSign, User, Stethoscope, } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type BookingStatus = "Pending" | "Approved" | "Cancelled" | "Rejected"
@@ -62,8 +62,8 @@ export function BookingCard({ booking, onCancel, onPay }: BookingCardProps) {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <DollarSign className="w-5 h-5 text-[#c94d8a]" />
-          <span className="text-lg font-bold text-gray-900">{booking.fee}</span>
+          {/* <DollarSign className="w-5 h-5 text-[#c94d8a]" /> */}
+          <span className="text-lg font-bold text-gray-900">Ksh.{booking.fee}</span>
         </div>
 
         {/* Status-based actions */}
