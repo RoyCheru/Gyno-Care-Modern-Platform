@@ -228,6 +228,7 @@ def make_doctor_application():
     full_name = data.get("fullName")
     speciality_id = data.get("speciality_id")
     years_of_experience = data.get("years_of_experience")
+    medicalLicenceNumber = data.get("medicalLicenceNumber")
     email = data.get("email")
     phone = data.get("phone")
     gender = data.get("gender")
@@ -243,7 +244,7 @@ def make_doctor_application():
         years_of_experience=years_of_experience,
         email=email,
         phone=phone,
-        medicalLicenceNumber=None,
+        medicalLicenceNumber=medicalLicenceNumber,
         bio=None,
         gender=gender
     )

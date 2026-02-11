@@ -63,7 +63,7 @@ interface BackendDoctor {
   experience_years: number;
   phone: string;
   joined_at: string;
-  license_number: string;
+  MedicalLicenseNumber: string;
   user: {
     name: string;
     email: string;
@@ -80,7 +80,7 @@ function mapBackendDoctor(doc: BackendDoctor): DoctorUI {
     name: doc.user.name,
     email: doc.user.email,
     speciality: doc.speciality.name,
-    license: doc.license_number,
+    license: doc.MedicalLicenseNumber,
     yearsExp: doc.experience_years,
     status: doc.status,
     joinDate: doc.joined_at,
