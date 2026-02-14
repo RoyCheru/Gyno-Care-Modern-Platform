@@ -197,7 +197,8 @@ def review_doctor_application(application_id):
         medicalLicenceNumber=application.medicalLicenceNumber,
         phone=application.phone,
         consultation_fee=0.0,  # doctor can set later
-        status="active"
+        status="active",
+        location=application.location
     )
 
     db.session.add(new_doctor)

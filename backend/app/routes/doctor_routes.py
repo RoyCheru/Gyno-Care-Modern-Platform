@@ -88,6 +88,9 @@ def update_doctor_profile():
 
     if "profile_picture" in data:
         doctor.profile_picture = data["profile_picture"]
+        
+    if "location" in data:
+        doctor.location = data["location"]
 
     db.session.commit()
     
@@ -233,26 +236,42 @@ def make_doctor_application():
     phone = data.get("phone")
     gender = data.get("gender")
     location = data.get("location")
-    if not all([full_name, speciality_id, years_of_experience, email, phone]):
-        return jsonify({"msg": "Missing required fields"}), 400
+    bio = data.get("bio")
+    
+    # Validate required fields
+    if not all([full_name, speciality_id, years_of_experience, email, phone, location, bio]):
+        return jsonify({"error": "Missing required fields"}), 400
+    
     from app.models.doctorsapplications import DoctorApplication
+    
+    # Check if email already exists
     existing = DoctorApplication.query.filter_by(email=email).first()
     if existing:
-        return jsonify({"msg": "An application with this email already exists"}), 400
-    application = DoctorApplication(
-        full_name=full_name,
-        speciality_id=speciality_id,
-        years_of_experience=years_of_experience,
-        email=email,
-        phone=phone,
-        medicalLicenceNumber=medicalLicenceNumber,
-        bio=None,
-        gender=gender,
-        location=location
-    )
-    db.session.add(application)
-    db.session.commit()
-    return jsonify({"msg": "Application submitted successfully"}), 201
+        return jsonify({"error": "An application with this email already exists"}), 400
+    
+    try:
+        application = DoctorApplication(
+            full_name=full_name,
+            speciality_id=speciality_id,
+            years_of_experience=years_of_experience,
+            email=email,
+            phone=phone,
+            medicalLicenceNumber=medicalLicenceNumber,
+            bio=bio,
+            gender=gender,
+            location=location
+        )
+        db.session.add(application)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Application submitted successfully",
+            "application_id": application.id
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to submit application. Please try again."}), 500
 
 @doctor_bp.route("/all", methods=["GET"])
 # @jwt_required()

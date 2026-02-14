@@ -33,7 +33,7 @@ class Doctor(db.Model):
             "currency": self.currency,
             "consultation_fee": self.consultation_fee,
             "profile_picture": self.profile_picture,
-            "location": self.location or "",
+            "location": self.location or "location not set",
             "phone": self.phone,
             "joined_at": self.joined_at,
             "bio": self.bio,

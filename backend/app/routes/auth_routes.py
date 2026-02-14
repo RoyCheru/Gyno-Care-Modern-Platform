@@ -129,10 +129,6 @@ def login_patient():
     password = data.get("password")
 
     user = User.query.filter_by(email=email).first()
-    print("DATA RECEIVED:", data)
-    print("USER FOUND:", user)
-    print("STORED HASH:", user.password)
-    print("PASSWORD TYPE:", type(user.password))
 
     if not user:
         return jsonify({"error": "Invalid email or password"}), 401
