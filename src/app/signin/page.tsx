@@ -57,8 +57,34 @@ export default function SignInPage() {
       } else {
         router.push("/");
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Invalid email or password");
+    } catch (error: any) {
+      console.error("Login error:", error);
+
+      // Handle different error scenarios
+      if (error?.response?.status === 401) {
+        // Unauthorized - wrong credentials
+        setError(error?.response?.data?.error || "Invalid email or password");
+      } else if (error?.response?.status === 400) {
+        // Bad request - missing fields
+        setError(
+          error?.response?.data?.error || "Please provide valid credentials",
+        );
+      } else if (error?.response?.status === 500) {
+        // Server error
+        setError("Server error. Please try again later");
+      } else if (error?.code === "ERR_NETWORK" || !error?.response) {
+        // Network error or no response
+        setError(
+          "Unable to connect to server. Please check your internet connection",
+        );
+      } else {
+        // Generic error
+        setError(
+          error?.response?.data?.error ||
+            error?.response?.data?.message ||
+            "An error occurred. Please try again",
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +120,24 @@ export default function SignInPage() {
               Enter your credentials to access your account
             </p>
           </div>
+
+          {/* Error Alert */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-sm text-red-800">{error}</span>
+            </div>
+          )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">

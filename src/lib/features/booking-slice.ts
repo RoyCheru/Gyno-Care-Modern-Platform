@@ -7,6 +7,7 @@ export interface Doctor {
   experience: number
   fee: number
   image: string | null
+  location: string
 }
 
 export interface BackendDoctor {
@@ -16,6 +17,7 @@ export interface BackendDoctor {
   currency: string
   consultation_fee: number
   profile_picture: string | null
+  location: string
 
   user: {
     id: number
@@ -37,6 +39,7 @@ export function mapDoctorToUI(doctor: BackendDoctor): Doctor {
     experience: doctor.experience_years,
     fee: doctor.consultation_fee,
     image: doctor.profile_picture,
+    location: doctor.location,
   }
 }
 

@@ -16,9 +16,11 @@ export function HeroSection() {
             hub
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <Link href="/signup">
             <Button className="bg-[#c94d8a] hover:bg-[#b03d78] text-white rounded-full px-8 py-6 text-base font-semibold">
               GET STARTED
             </Button>
+            </Link>
             <Link href="/book-consultation">
               <Button
                 variant="outline"

@@ -20,19 +20,93 @@ export default function SignUpPage() {
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Clear error when user starts typing
+    if (error) setError(null);
     setFormData((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
+  };;
+
+  const validateForm = (): boolean => {
+    // Check for empty fields
+    if (!formData.fullName.trim()) {
+      setError("Please enter your full name");
+      return false;
+    }
+
+    if (formData.fullName.trim().length < 4) {
+      setError("Full name must be at least 4 characters");
+      return false;
+    }
+
+    if (!formData.email) {
+      setError("Please enter your email");
+      return false;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+    if (!formData.password) {
+      setError("Please enter a password");
+      return false;
+    }
+
+    // Password strength validation
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return false;
+    }
+
+    if (!/(?=.*[a-z])/.test(formData.password)) {
+      setError("Password must contain at least one lowercase letter");
+      return false;
+    }
+
+    if (!/(?=.*[A-Z])/.test(formData.password)) {
+      setError("Password must contain at least one uppercase letter");
+      return false;
+    }
+
+    if (!/(?=.*\d)/.test(formData.password)) {
+      setError("Password must contain at least one number");
+      return false;
+    }
+
+    if (!formData.confirmPassword) {
+      setError("Please confirm your password");
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return false;
+    }
+
+    if (!termsAccepted) {
+      setError("Please accept the Terms of Service and Privacy Policy");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+    setError(null);
+
+    // Validate form
+    if (!validateForm()) {
       return;
     }
     setIsLoading(true);
@@ -50,14 +124,46 @@ export default function SignUpPage() {
       setTimeout(() => {
         router.push("/signin");
       }, 1500);
-    } catch (error: any) {
-      console.error(error);
-      alert(error?.response?.data?.message || "Registration failed");
+    } catch (err: any) {
+      console.error("Registration error:", err);
+
+      // Handle different error scenarios
+      if (err?.response?.status === 400) {
+        // Bad request - could be missing fields or email already registered
+        const errorMessage = err?.response?.data?.error;
+        if (
+          errorMessage?.toLowerCase().includes("already registered") ||
+          errorMessage?.toLowerCase().includes("already exists")
+        ) {
+          setError(
+            "This email is already registered. Please sign in or use a different email.",
+          );
+        } else if (errorMessage?.toLowerCase().includes("missing")) {
+          setError("Please fill in all required fields");
+        } else {
+          setError(errorMessage || "Invalid registration details");
+        }
+      } else if (err?.response?.status === 500) {
+        // Server error
+        setError("Server error. Please try again later");
+      } else if (err?.code === "ERR_NETWORK" || !err?.response) {
+        // Network error or no response
+        setError(
+          "Unable to connect to server. Please check your internet connection",
+        );
+      } else {
+        // Generic error
+        setError(
+          err?.response?.data?.error ||
+            err?.response?.data?.message ||
+            "Registration failed. Please try again",
+        );
+      }
     } finally {
       setIsLoading(false);
     }
-
   };
+
 
   return (
     <div className="min-h-screen flex">
@@ -110,6 +216,24 @@ export default function SignUpPage() {
             </div>
           )}
 
+          {/* Error Alert */}
+          {error && !showSuccess && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <svg
+                className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-sm text-red-800">{error}</span>
+            </div>
+          )}
+
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-gray-700 font-medium">
@@ -154,6 +278,10 @@ export default function SignUpPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c94d8a] focus:border-transparent"
                 disabled={isLoading}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Must be at least 8 characters with uppercase, lowercase, and
+                number
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -178,6 +306,11 @@ export default function SignUpPage() {
               <input
                 type="checkbox"
                 id="terms"
+                checked={termsAccepted}
+                onChange={(e) => {
+                  setTermsAccepted(e.target.checked);
+                  if (error && e.target.checked) setError(null);
+                }}
                 className="w-4 h-4 mt-1 rounded border-gray-300 text-[#c94d8a] focus:ring-[#c94d8a]"
                 disabled={isLoading}
               />
