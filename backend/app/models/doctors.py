@@ -14,6 +14,7 @@ class Doctor(db.Model):
     rating = db.Column(db.Float, nullable=True)
     experience_years = db.Column(db.Integer, nullable=False)
     profile_picture = db.Column(db.String(255), nullable=True)
+    location = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(50), nullable=False, default="active")  # active, inactive, suspended
     phone = db.Column(db.String(50), nullable=True)
     medicalLicenceNumber = db.Column(db.String(100), nullable=True)
@@ -32,6 +33,7 @@ class Doctor(db.Model):
             "currency": self.currency,
             "consultation_fee": self.consultation_fee,
             "profile_picture": self.profile_picture,
+            "location": self.location or "",
             "phone": self.phone,
             "joined_at": self.joined_at,
             "bio": self.bio,

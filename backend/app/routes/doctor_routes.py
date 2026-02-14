@@ -232,6 +232,7 @@ def make_doctor_application():
     email = data.get("email")
     phone = data.get("phone")
     gender = data.get("gender")
+    location = data.get("location")
     if not all([full_name, speciality_id, years_of_experience, email, phone]):
         return jsonify({"msg": "Missing required fields"}), 400
     from app.models.doctorsapplications import DoctorApplication
@@ -246,7 +247,8 @@ def make_doctor_application():
         phone=phone,
         medicalLicenceNumber=medicalLicenceNumber,
         bio=None,
-        gender=gender
+        gender=gender,
+        location=location
     )
     db.session.add(application)
     db.session.commit()
