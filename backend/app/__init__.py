@@ -27,7 +27,8 @@ def create_app():
     cors.init_app(app, resources={r"/*": {"origins": [
         "http://127.0.0.1:5173",
         "http://localhost:5173",
-        "http://localhost:3000"  # Next.js default port
+        "http://localhost:3000",  # Next.js default port
+        "https://gyno-care-modern-platform-production.vercel.app"
     ]}}, supports_credentials=True)
     
     # import all models so Flask-Migrate can detect them
