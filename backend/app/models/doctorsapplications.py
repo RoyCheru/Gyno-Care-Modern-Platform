@@ -11,6 +11,7 @@ class DoctorApplication(db.Model):
     gender = db.Column(db.String(20), nullable=True)
     years_of_experience = db.Column(db.Integer, nullable=False)
     medicalLicenceNumber = db.Column(db.String(100), nullable=True)
+    location = db.Column(db.String(150), nullable=True)
     bio = db.Column(db.Text, nullable=True)
 
     speciality_id = db.Column(db.Integer, db.ForeignKey("specialities.id"), nullable=False)
