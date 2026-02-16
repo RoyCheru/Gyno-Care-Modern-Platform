@@ -28,7 +28,8 @@ def create_app():
         "http://127.0.0.1:5173",
         "http://localhost:5173",
         "http://localhost:3000",  # Next.js default port
-        "https://gyno-care-modern-platform.vercel.app"
+        "https://gyno-care-modern-platform.vercel.app",
+        "https://gyno-care-modern-platform-production.up.railway.app"
     ]}}, supports_credentials=True)
     
     # import all models so Flask-Migrate can detect them
